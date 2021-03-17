@@ -78,6 +78,8 @@
 #include "services/management.hpp"
 #include "services/memTracker.hpp"
 #include "services/threadService.hpp"
+// SapMachine 2019-02-20 : vitals
+#include "services/vitals.hpp"
 #include "utilities/defaultStream.hpp"
 #include "utilities/dtrace.hpp"
 #include "utilities/events.hpp"
@@ -3674,6 +3676,11 @@ jint Threads::create_vm(JavaVMInitArgs* args, bool* canTryAgain) {
   StatSampler::engage();
   if (CheckJNICalls)                  JniPeriodicChecker::engage();
 
+  // SapMachine 2019-02-20 : vitals
+  if (EnableVitals) {
+    sapmachine_vitals::initialize();
+  }
+
   BiasedLocking::init();
 
 #if INCLUDE_RTM_OPT
@@ -4097,6 +4104,10 @@ void Threads::add(JavaThread* p, bool force_daemon) {
   p->set_next(_thread_list);
   _thread_list = p;
   _number_of_threads++;
+
+  // SapMachine 2019-02-20 : vitals
+  sapmachine_vitals::counters::inc_threads_created(1);
+
   oop threadObj = p->threadObj();
   bool daemon = true;
   // Bootstrapping problem: threadObj can be null for initial

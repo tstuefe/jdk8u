@@ -32,6 +32,8 @@
 #include "services/diagnosticFramework.hpp"
 #include "services/heapDumper.hpp"
 #include "services/management.hpp"
+// SapMachine 2019-02-20 : vitals
+#include "services/vitalsDCmd.hpp"
 #include "utilities/macros.hpp"
 #include "oops/objArrayOop.hpp"
 
@@ -63,6 +65,9 @@ void DCmdRegistrant::register_dcmds(){
   DCmdFactory::register_DCmdFactory(new DCmdFactoryImpl<ThreadDumpDCmd>(full_export, true, false));
   DCmdFactory::register_DCmdFactory(new DCmdFactoryImpl<RotateGCLogDCmd>(full_export, true, false));
   DCmdFactory::register_DCmdFactory(new DCmdFactoryImpl<ClassLoaderStatsDCmd>(full_export, true, false));
+
+  // SapMachine 2019-02-20 : vitals
+  DCmdFactory::register_DCmdFactory(new DCmdFactoryImpl<sapmachine_vitals::VitalsDCmd>(full_export, true, false));
 
   // Enhanced JMX Agent Support
   // These commands won't be exported via the DiagnosticCommandMBean until an

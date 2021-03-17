@@ -36,6 +36,8 @@
 #include "runtime/vmThread.hpp"
 #include "runtime/vm_operations.hpp"
 #include "services/memTracker.hpp"
+// SapMachine 2019-02-20 : vitals
+#include "services/vitals.hpp"
 #include "utilities/debug.hpp"
 #include "utilities/decoder.hpp"
 #include "utilities/defaultStream.hpp"
@@ -785,6 +787,15 @@ void VMError::report(outputStream* st) {
   STEP(228, "(Native Memory Tracking)" )
      if (_verbose) {
        MemTracker::error_report(st);
+     }
+
+  // SapMachine 2019-02-20 : vitals
+  STEP(229, "(Vitals)")
+     if (_verbose) {
+       sapmachine_vitals::print_info_t info;
+       sapmachine_vitals::default_settings(&info);
+       info.sample_now = true; // About the only place where we do this apart from explicitly setting the "now" parm on jcmd
+       sapmachine_vitals::print_report(st);
      }
 
   STEP(230, "" )
